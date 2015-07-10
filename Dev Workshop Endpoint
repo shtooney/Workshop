@@ -1,0 +1,27 @@
+@RestResource(urlMapping='/PostExample/*')
+                                
+global with sharing class PostManager {
+  
+    @HttpGet
+    global static Session__c getSessionById() {
+        RestRequest req = RestContext.request;        
+        String seshId = req.requestURI.substring(
+                                  req.requestURI.lastIndexOf('/')+1);
+        Session__c result = 
+                       [SELECT Id, Name, Description__c, Level__c 
+                        FROM Session__c 
+                        WHERE Id = :seshId];
+        return result;
+    }
+  
+    @HttpPost
+    global static String createSession(String name,
+        String description, String level) {
+        Session__c s = new Session__c(
+            Name=name,
+            Description__c=description + ' - this came from another system',
+        	Level__c=level);
+        insert s;
+        return s.Name;
+    }
+}
